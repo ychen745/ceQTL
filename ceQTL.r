@@ -2,7 +2,7 @@ DEBUG = TRUE
 
 ##################################################################   find snp 
 
-ceQTL = function(genename, fgeno, fexpr, fgene_loc, ftf_info, extend_dis = 50000){
+ceQTL = function(genename, fgeno, fexpr, fgene_loc, ftf_info, fcov = '', extend_dis = 10000){
   if(!require("tidyverse")){
     install.packages("tidyverse")
   }
@@ -69,8 +69,9 @@ ceQTL = function(genename, fgeno, fexpr, fgene_loc, ftf_info, extend_dis = 50000
   gfile    =  paste0(genename,'_snp_all.txt')
   cfile    =  paste0(genename,'_case_snp_gene.xls')
   outfile  =  paste0(genename,'_chow_result_ALL.txt')
+  covfile = fcov
   
-  pan_chowtest (infile,gfile,cfile ,outfile,pcut)  # chowtes all
+  pan_chowtest (infile,gfile,cfile,outfile,covfile,pcut)  # chowtes all
   
   ### end chowtest ###
   
@@ -181,7 +182,7 @@ findsnp = function(genename,gene_list,gene_loc,snp_loc,extend_dis)   # find snp
     genesnp$position = as.integer(genesnp$position)
     genesnp = genesnp[which(genesnp$position >= as.integer(chrstr[2]) & genesnp$position <= as.integer(chrstr[3])),]   # find snp pos
     
-    print(nrow(genesnp))
+    # print(nrow(genesnp))
     
     colnames(genesnp)[2] ='chr' 
     genename_lo = gene_loc[which(gene_loc$geneid ==genename ),]   # genename loacation
@@ -432,7 +433,7 @@ CalAnova = function( expr_0, expr_1, expr_2) {
 #################################################################  chow test function
 library(methods)
 
-pan_chowtest = function(infile,gfile,cfile ,outfile,pcut = 0.05) {
+pan_chowtest = function(infile,gfile,cfile,outfile,covfile = '', pcut = 0.05) {
   
   logger = function(..., level = 'INFO') {
     cat(paste0(level, ': ', paste(...), '\n'), file = stderr())
@@ -605,7 +606,7 @@ pan_chowtest = function(infile,gfile,cfile ,outfile,pcut = 0.05) {
   devpars  = ''#Box(res = 300, width = 2000, height = 2000)
   ggs      = ''#box()
   inopts   =  ''#box(cnames = True, rnames = True)
-  covfile  = ''
+  # covfile  = ''
   
   if (plotchow) {
     {{rimport}}('plot.r')
@@ -839,9 +840,10 @@ if(DEBUG){
   fexpr = "/research/labs/pharmacology/junwenwang/data/yanxi/tcga_test/expr_mtx.txt"
   fgene_loc = "/research/labs/pharmacology/junwenwang/data/yanxi/reference/TCGA_gene_loc_strand_hg38.txt"
   ftf_info = "/research/labs/pharmacology/junwenwang/data/genecard/all/info/TP73.txt"
+  fcov = "/research/labs/pharmacology/junwenwang/data/yanxi/tcga_test/cov.txt"
   genename = "TP73"
   
-  ceQTL(genename, fgeno, fexpr, fgene_loc, ftf_info)
+  ceQTL(genename, fgeno, fexpr, fgene_loc, ftf_info, fcov)
 } else{
   args <- commandArgs(trailingOnly = TRUE)
   #tcga_path = '/research/labs/pharmacology/junwenwang/data/tcga/GBM_genecard/'
