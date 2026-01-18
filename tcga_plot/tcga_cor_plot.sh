@@ -1,1 +1,0 @@
-Rscript tcga_cor_plot.r plot_20240529.tsv plt_20240529 plt_result_20240529
